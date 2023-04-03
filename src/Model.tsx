@@ -3,20 +3,12 @@ import styles from "./config/ModelStyle";
 import { NEWS_DATA } from "./data/news";
 import { FiCornerDownLeft, FiMenu, FiSearch, FiStar } from "react-icons/fi";
 import ModelFooter from "./ModelFooter";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { SearchContext, SearchContextValue } from "./context/SearchContext";
 Modal.setAppElement("#root");
-export default function Model({
-  isOpen,
-  setWhichActive,
-  whichActive,
-  handleClose,
-}: {
-  isOpen: boolean;
-  whichActive: number;
-  // you this type to function which does not have any arguments and does not return anything
-  setWhichActive: Function;
-  handleClose: () => void;
-}): JSX.Element {
+export default function Model(): JSX.Element {
+  const { modalIsOpen, closeModal, setWhichActive, whichActive } =
+    useContext<SearchContextValue>(SearchContext);
   const [data, setData] = useState(NEWS_DATA[0].articles.slice(0, 5));
   function handleSearchData(event: React.ChangeEvent<HTMLInputElement>) {
     if (event.target.value === "") {
@@ -32,8 +24,8 @@ export default function Model({
   }
   return (
     <Modal
-      isOpen={isOpen}
-      onRequestClose={handleClose}
+      isOpen={modalIsOpen}
+      onRequestClose={closeModal}
       style={styles}
       contentLabel="Seacher Modal"
     >
@@ -62,7 +54,7 @@ export default function Model({
                   return (
                     <div
                       key={`key-new-${index}`}
-                      onClick={handleClose}
+                      onClick={closeModal}
                       onMouseEnter={() => setWhichActive(index)}
                       className={`flex justify-between items-center group text-[#99a1b3] cursor-pointer 
                   rounded-md px-6 mb-2 ${
@@ -98,8 +90,7 @@ export default function Model({
             </>
           )}
         </div>
-
-        {/* <div>
+        <div>
           <h3 className="uppercase text-sm font-bold my-3">FAVORITES</h3>
           <div className="flex justify-between items-center text-[#99a1b3] cursor-pointer rounded-md px-6">
             <div className="flex gap-2 items-center py-1.5">
@@ -111,9 +102,8 @@ export default function Model({
             </div>
             <FiStar className="mt-0.5 active:fill-yellow-400 active:stroke-yellow-400" />
           </div>
-        </div> */}
+        </div>
 
-        {/* footer */}
         <ModelFooter />
       </div>
     </Modal>

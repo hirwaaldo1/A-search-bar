@@ -1,48 +1,9 @@
 import { FiSearch } from "react-icons/fi";
 import Model from "./Model";
-import { useState, useEffect } from "react";
+import { useContext } from "react";
+import { SearchContext, SearchContextValue } from "./context/SearchContext";
 function App() {
-  const [modalIsOpen, setIsOpen] = useState(false);
-  const [whichActive, setWhichActive] = useState(0);
-  function openModal() {
-    setIsOpen(true);
-  }
-  function closeModal() {
-    setIsOpen(false);
-  }
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.ctrlKey && e.key === "k") {
-      e.preventDefault();
-      setIsOpen((prevIsOpen) => !prevIsOpen);
-    }
-    if (modalIsOpen) {
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        setWhichActive((prevWhichActive) =>
-          prevWhichActive === 4 ? 0 : prevWhichActive + 1
-        );
-      }
-      if (e.key === "ArrowUp") {
-        e.preventDefault();
-        setWhichActive((prevWhichActive) =>
-          prevWhichActive === 0 ? 4 : prevWhichActive - 1
-        );
-      }
-      if (e.key === "Enter") {
-        e.preventDefault();
-        setWhichActive(0);
-        setIsOpen(false);
-      }
-    }
-  };
-  useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [modalIsOpen]);
-
+  const { openModal } = useContext<SearchContextValue>(SearchContext);
   return (
     <div className="max-w-5xl mx-auto mt-5">
       <div
@@ -64,12 +25,7 @@ function App() {
         </div>
       </div>
 
-      <Model
-        isOpen={modalIsOpen}
-        whichActive={whichActive}
-        handleClose={closeModal}
-        setWhichActive={setWhichActive}
-      />
+      <Model />
     </div>
   );
 }
