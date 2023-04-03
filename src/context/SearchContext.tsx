@@ -1,12 +1,6 @@
 import { createContext, useEffect, useState } from "react";
-export interface SearchContextValue {
-  modalIsOpen: boolean;
-  whichActive: number;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setWhichActive: React.Dispatch<React.SetStateAction<number>>;
-  openModal: () => void;
-  closeModal: () => void;
-}
+import { NEWS_DATA } from "../data/news";
+import { SearchContextValue } from "../interfaces";
 export const SearchContext = createContext<SearchContextValue>(
   {} as SearchContextValue
 );
@@ -17,12 +11,15 @@ export default function SearchContextProvider({
 }) {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [whichActive, setWhichActive] = useState(0);
+  const [data, setData] = useState(NEWS_DATA[0].articles.slice(0, 5));
+  const [backData, setBackData] = useState(NEWS_DATA[0].articles);
   function openModal() {
     setIsOpen(true);
   }
   function closeModal() {
     setIsOpen(false);
   }
+
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.ctrlKey && e.key === "k") {
       e.preventDefault();
@@ -32,13 +29,13 @@ export default function SearchContextProvider({
       if (e.key === "ArrowDown") {
         e.preventDefault();
         setWhichActive((prevWhichActive) =>
-          prevWhichActive === 4 ? 0 : prevWhichActive + 1
+          prevWhichActive === data.length - 1 ? 0 : prevWhichActive + 1
         );
       }
       if (e.key === "ArrowUp") {
         e.preventDefault();
         setWhichActive((prevWhichActive) =>
-          prevWhichActive === 0 ? 4 : prevWhichActive - 1
+          prevWhichActive === 0 ? data.length - 1 : prevWhichActive - 1
         );
       }
       if (e.key === "Enter") {
@@ -48,6 +45,41 @@ export default function SearchContextProvider({
       }
     }
   };
+  function handleSearchData(event: React.ChangeEvent<HTMLInputElement>) {
+    if (event.target.value === "") {
+      setData(backData.slice(0, 5));
+      return;
+    }
+    const newData = backData.filter((article) => {
+      return (
+        article.title.toLowerCase() || article.description.toLowerCase()
+      ).includes(event.target.value.toLowerCase());
+    });
+    setData(newData.slice(0, 5));
+  }
+  function addFovorite(id: string) {
+    const newData = data.map((article) => {
+      if (id === article.id) {
+        return {
+          ...article,
+          isSeleted: !article.isSeleted,
+        };
+      }
+      return article;
+    });
+    setData(newData);
+    setBackData((prevBackData) => {
+      return prevBackData.map((article) => {
+        if (id === article.id) {
+          return {
+            ...article,
+            isSeleted: !article.isSeleted,
+          };
+        }
+        return article;
+      });
+    });
+  }
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
 
@@ -58,10 +90,14 @@ export default function SearchContextProvider({
   let value = {
     modalIsOpen,
     whichActive,
+    data,
+    setData,
     setIsOpen,
     setWhichActive,
     openModal,
     closeModal,
+    handleSearchData,
+    addFovorite,
   };
   return (
     <SearchContext.Provider value={value}>{children}</SearchContext.Provider>

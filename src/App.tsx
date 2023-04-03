@@ -1,7 +1,8 @@
 import { FiSearch } from "react-icons/fi";
 import Model from "./Model";
 import { useContext } from "react";
-import { SearchContext, SearchContextValue } from "./context/SearchContext";
+import { SearchContext } from "./context/SearchContext";
+import { SearchContextValue } from "./interfaces";
 function App() {
   const { openModal } = useContext<SearchContextValue>(SearchContext);
   return (

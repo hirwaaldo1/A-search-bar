@@ -3,25 +3,21 @@ import styles from "./config/ModelStyle";
 import { NEWS_DATA } from "./data/news";
 import { FiCornerDownLeft, FiMenu, FiSearch, FiStar } from "react-icons/fi";
 import ModelFooter from "./ModelFooter";
-import { useContext, useState } from "react";
-import { SearchContext, SearchContextValue } from "./context/SearchContext";
+import { useContext } from "react";
+import { SearchContext } from "./context/SearchContext";
+import { Article, SearchContextValue } from "./interfaces";
 Modal.setAppElement("#root");
 export default function Model(): JSX.Element {
-  const { modalIsOpen, closeModal, setWhichActive, whichActive } =
-    useContext<SearchContextValue>(SearchContext);
-  const [data, setData] = useState(NEWS_DATA[0].articles.slice(0, 5));
-  function handleSearchData(event: React.ChangeEvent<HTMLInputElement>) {
-    if (event.target.value === "") {
-      setData(NEWS_DATA[0].articles.slice(0, 5));
-      return;
-    }
-    const newData = NEWS_DATA[0].articles.filter((article) => {
-      return (
-        article.title.toLowerCase() || article.description.toLowerCase()
-      ).includes(event.target.value.toLowerCase());
-    });
-    setData(newData.slice(0, 5));
-  }
+  const {
+    modalIsOpen,
+    closeModal,
+    setWhichActive,
+    addFovorite,
+    data,
+    handleSearchData,
+    whichActive,
+  } = useContext<SearchContextValue>(SearchContext);
+
   return (
     <Modal
       isOpen={modalIsOpen}
@@ -36,7 +32,7 @@ export default function Model(): JSX.Element {
             <input
               placeholder="Search"
               autoFocus
-              onChange={handleSearchData}
+              onChange={(event) => handleSearchData(event)}
               className="-mt-0.5 bg-transparent outline-none w-full"
             />
           </div>
@@ -50,7 +46,7 @@ export default function Model(): JSX.Element {
                 REACT MEETUPS
               </h3>
               <div className="overflow-auto h-[300px]">
-                {data.map((article, index) => {
+                {data.map((article: Article, index: number) => {
                   return (
                     <div
                       key={`key-new-${index}`}
@@ -75,10 +71,13 @@ export default function Model(): JSX.Element {
                         <div className="flex gap-2 items-center">
                           <FiStar
                             onClick={(e) => {
-                              console.log("aldo");
+                              addFovorite(article.id);
                               e.stopPropagation();
                             }}
-                            className="mt-0.5 active:fill-yellow-400 active:stroke-yellow-400"
+                            className={`mt-0.5 ${
+                              article.isSeleted &&
+                              "fill-yellow-400 stroke-yellow-400"
+                            } `}
                           />
                           <FiCornerDownLeft className="mt-0.5" />
                         </div>
@@ -90,18 +89,40 @@ export default function Model(): JSX.Element {
             </>
           )}
         </div>
-        <div>
-          <h3 className="uppercase text-sm font-bold my-3">FAVORITES</h3>
-          <div className="flex justify-between items-center text-[#99a1b3] cursor-pointer rounded-md px-6">
-            <div className="flex gap-2 items-center py-1.5">
-              <FiMenu size={20} className="mt-1" />
-              <div className=" text-sm leading-5">
-                <span>san Diego, CA - san Diego JS US</span>
-                <span className="block">1,000 members</span>
-              </div>
-            </div>
-            <FiStar className="mt-0.5 active:fill-yellow-400 active:stroke-yellow-400" />
-          </div>
+        <div className="h-[170px] overflow-auto">
+          {data.filter((value: Article) => value.isSeleted).length > 0 && (
+            <h3 className="uppercase text-sm font-bold my-3">FAVORITES</h3>
+          )}
+          {data
+            .filter((value: Article) => {
+              return value.isSeleted;
+            })
+            .map((article: Article) => {
+              return (
+                <div
+                  key={article.id}
+                  onClick={closeModal}
+                  className="flex justify-between items-center text-[#99a1b3] cursor-pointer rounded-md px-6 hover:bg-[#149eca] hover:text-white"
+                >
+                  <div className="flex gap-2 items-center py-1.5">
+                    <FiMenu size={20} className="mt-1" />
+                    <div className=" text-sm leading-5">
+                      <span>{article.title.substring(0, 100)}...</span>
+                      <span className="block">{article.source.name}</span>
+                    </div>
+                  </div>
+                  <FiStar
+                    onClick={(e) => {
+                      addFovorite(article.id);
+                      e.stopPropagation();
+                    }}
+                    className={`mt-0.5 ${
+                      article.isSeleted && "fill-yellow-400 stroke-yellow-400"
+                    } `}
+                  />
+                </div>
+              );
+            })}
         </div>
 
         <ModelFooter />
