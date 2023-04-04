@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState, useCallback } from "react";
 import { NEWS_DATA } from "../data/news";
 import { SearchContextValue } from "../interfaces";
 export const SearchContext = createContext<SearchContextValue>(
@@ -20,31 +20,34 @@ export default function SearchContextProvider({
     setIsOpen(false);
   }
 
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.ctrlKey && e.key === "k") {
-      e.preventDefault();
-      setIsOpen((prevIsOpen) => !prevIsOpen);
-    }
-    if (modalIsOpen) {
-      if (e.key === "ArrowDown") {
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === "k") {
         e.preventDefault();
-        setWhichActive((prevWhichActive) =>
-          prevWhichActive === data.length - 1 ? 0 : prevWhichActive + 1
-        );
+        setIsOpen((prevIsOpen) => !prevIsOpen);
       }
-      if (e.key === "ArrowUp") {
-        e.preventDefault();
-        setWhichActive((prevWhichActive) =>
-          prevWhichActive === 0 ? data.length - 1 : prevWhichActive - 1
-        );
+      if (modalIsOpen) {
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          setWhichActive((prevWhichActive) =>
+            prevWhichActive === data.length - 1 ? 0 : prevWhichActive + 1
+          );
+        }
+        if (e.key === "ArrowUp") {
+          e.preventDefault();
+          setWhichActive((prevWhichActive) =>
+            prevWhichActive === 0 ? data.length - 1 : prevWhichActive - 1
+          );
+        }
+        if (e.key === "Enter") {
+          e.preventDefault();
+          setWhichActive(0);
+          setIsOpen(false);
+        }
       }
-      if (e.key === "Enter") {
-        e.preventDefault();
-        setWhichActive(0);
-        setIsOpen(false);
-      }
-    }
-  };
+    },
+    [modalIsOpen, data.length]
+  );
   function handleSearchData(event: React.ChangeEvent<HTMLInputElement>) {
     if (event.target.value === "") {
       setData(backData.slice(0, 5));
@@ -81,12 +84,12 @@ export default function SearchContextProvider({
     });
   }
   useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown);
-
+    const handleKeyDownRef = handleKeyDown;
+    document.addEventListener("keydown", handleKeyDownRef);
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("keydown", handleKeyDownRef);
     };
-  }, [modalIsOpen]);
+  }, [handleKeyDown]);
   let value = {
     modalIsOpen,
     whichActive,
