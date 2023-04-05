@@ -1,14 +1,14 @@
-# A-van with react-router-dom
+# A-search-bar with react-router-dom
 
 This Scrimba project utilizes only version 6 of react-router-dom to fetch and change pages, and additionally incorporates Firebase as the database
 
 ## Live version
 
-[A-van Project on netlify](https://a-van.netlify.app/)
+[A-search-bar  Project on netlify](https://a-van.netlify.app/)
 
 ## Contents
 
-In this A-van Project project we have the following section done:
+In this A-search-bar Project project we have the following section done:
 
 - [x] Search model
 
