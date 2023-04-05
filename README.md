@@ -4,7 +4,7 @@ This Scrimba project utilizes only version 6 of react-router-dom to fetch and ch
 
 ## Live version
 
-[A-search-bar  Project on netlify](https://a-van.netlify.app/)
+[A-search-bar  Project on netlify](https://a-search-bar.netlify.app/)
 
 ## Contents
 
