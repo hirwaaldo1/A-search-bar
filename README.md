@@ -18,7 +18,7 @@ This project is mainly based on [React.js](https://reactjs.org/) plus others few
 
 - [react-modal](https://www.npmjs.com/package/react-modal)
 - [react-icons](https://www.npmjs.com/package/react-icons)
-- [vite](https://www.npmjs.com/package/vite)z
+- [vite](https://www.npmjs.com/package/vite)
 
 ## How To Run The Project
 
